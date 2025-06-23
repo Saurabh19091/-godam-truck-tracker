@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Update Godam Vehicles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+ 
+  <style>
+    body {
+       margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f2f5;
+  overflow-x: hidden;
+  position: relative;
+    }
+    .animated-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-image: linear-gradient(90deg, #e0e0e0 1px, transparent 1px), 
+                    linear-gradient(#e0e0e0 1px, transparent 1px);
+  background-size: 100px 100px;
+}
+
+/* Car icon */
+.car {
+  position: absolute;
+  top: 20%;
+  left: -60px;
+  font-size: 40px;
+  animation: moveCar 10s linear infinite;
+}
+
+/* Optional: Add more cars */
+.car:nth-child(2) {
+  top: 60%;
+  animation-delay: 4s;
+}
+
+.car:nth-child(3) {
+  top: 40%;
+  animation-delay: 2s;
+}
+
+@keyframes moveCar {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(110vw);
+  }
+}
+
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    .form-box, .godam-section {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 67px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+      margin-bottom: 40px;
+      max-width: 900px;
+      margin-inline: auto;
+    }
+
+    input, button, select {
+      padding: 10px;
+      margin: 10px 5px 10px 0;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+
+    .btn-save {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      float: right;
+    }
+
+    .btn-add, .btn-delete {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .btn-add {
+      background-color: green;
+    }
+
+    .btn-delete {
+      background-color: crimson;
+    }
+
+    @media (max-width: 768px) {
+      table, th, td, input, select, button {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🚛 Update Godam Vehicle Portal</h1>
+
+  <!-- 🔹 Step 1: Date Picker -->
+   <div class="animated-background">
+  <div class="car">🚚</div>
+  <div class="car">🚛</div>
+  <div class="car">🚐</div>
+</div>
+
+  <div class="form-box">
+    <label><strong>Select Date:</strong>
+      <input type="date" id="datePicker" required>
+    </label>
+    <button onclick="fetchData()">Fetch Godam Data</button>
+  </div>
+
+  <!-- 🔹 Step 2: New Godam Entry Form -->
+  <div class="form-box">
+    <h2>Add New Godam Entry</h2>
+    <form id="newGodamForm">
+      <input type="text" id="newGodamName" placeholder="Godam Name" required />
+      <button type="button" onclick="addNewRow()">Add Vehicle</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Vehicle No</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="newGodamBody"></tbody>
+      </table>
+      <button type="submit" class="btn-save">Save New Godam</button>
+    </form>
+  </div>
+
+  <!-- 🔹 Step 3: Existing Godams Render Here -->
+  <div id="godamSections"></div>
+
+  <script>
+    const godamSections = document.getElementById('godamSections');
+    const datePicker = document.getElementById('datePicker');
+    const newGodamForm = document.getElementById('newGodamForm');
+    const newGodamBody = document.getElementById('newGodamBody');
+
+    function addNewRow() {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><input type="text" placeholder="Vehicle No" required></td>
+        <td><input type="text" placeholder="Location" required></td>
+        <td>
+          <select>
+            <option>Arrived</option>
+            <option selected>Not Arrived</option>
+            <option>Offline</option>
+          </select>
+        </td>
+        <td><button class="btn-delete" onclick="this.closest('tr').remove()">Delete</button></td>
+      `;
+      newGodamBody.appendChild(tr);
+    }
+
+    newGodamForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const date = datePicker.value;
+      const godam = document.getElementById('newGodamName').value.trim();
+      if (!date || !godam) return alert("Date and Godam name are required!");
+
+      const rows = Array.from(newGodamBody.querySelectorAll("tr"));
+      const entries = rows.map(row => {
+        const [vehicleNo, location, status] = row.querySelectorAll("input, select");
+        return {
+          vehicleNo: vehicleNo.value,
+          location: location.value,
+          status: status.value
+        };
+      });
+
+      const res = await fetch('/updateData', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date, godam, entries })
+      });
+
+      alert(await res.text());
+      fetchData(); // refresh entries
+      newGodamForm.reset();
+      newGodamBody.innerHTML = "";
+    });
+
+    async function fetchData() {
+      const date = datePicker.value;
+      if (!date) return alert("Please select a date.");
+
+      const res = await fetch("/fetch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date })
+      });
+
+      const records = await res.json();
+      renderGodamTables(records, date);
+    }
+
+    function renderGodamTables(records, date) {
+      godamSections.innerHTML = "";
+
+      records.forEach(record => {
+        const section = document.createElement("div");
+        section.className = "godam-section";
+
+        let html = `
+          <h2>Godam: ${record.godam}</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Vehicle No</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        record.entries.forEach(entry => {
+          html += `
+            <tr>
+              <td><input type="text" value="${entry.vehicleNo}" /></td>
+              <td><input type="text" value="${entry.location}" /></td>
+              <td>
+                <select>
+                  <option ${entry.status === 'Arrived' ? 'selected' : ''}>Arrived</option>
+                  <option ${entry.status === 'Not Arrived' ? 'selected' : ''}>Not Arrived</option>
+                  <option ${entry.status === 'Offline' ? 'selected' : ''}>Offline</option>
+                </select>
+              </td>
+              <td><button class="btn-delete" onclick="this.closest('tr').remove()">Delete</button></td>
+            </tr>
+          `;
+        });
+
+        html += `
+            </tbody>
+          </table>
+          <button class="btn-add" onclick="addRowToGodam(this)">Add Row</button>
+          <button class="btn-save" onclick="saveExistingGodam(this, '${record.godam}', '${date}')">Save</button>
+        `;
+
+        section.innerHTML = html;
+        godamSections.appendChild(section);
+      });
+    }
+
+    function addRowToGodam(btn) {
+      const tbody = btn.parentElement.querySelector("tbody");
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><input type="text" /></td>
+        <td><input type="text" /></td>
+        <td>
+          <select>
+            <option>Arrived</option>
+            <option selected>Not Arrived</option>
+            <option>Offline</option>
+          </select>
+        </td>
+        <td><button class="btn-delete" onclick="this.closest('tr').remove()">Delete</button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    async function saveExistingGodam(btn, godam, date) {
+      const rows = btn.parentElement.querySelectorAll("tbody tr");
+      const entries = Array.from(rows).map(row => {
+        const [vehicleNo, location, status] = row.querySelectorAll("input, select");
+        return {
+          vehicleNo: vehicleNo.value,
+          location: location.value,
+          status: status.value
+        };
+      });
+
+      const res = await fetch('/updateData', {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date, godam, entries })
+      });
+
+      alert(await res.text());
+    }
+  </script>
+</body>
+</html>

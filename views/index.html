@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Godam Vehicle Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a2d9d5f89b.js" crossorigin="anonymous"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: url('/logistics-means-transport-together-with-technological-futuristic-holograms.jpg') no-repeat center center/cover;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 1rem 2rem;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav .logo {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    nav .menu a {
+      color: white;
+      margin-left: 1.5rem;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: color 0.3s ease;
+    }
+
+    nav .menu a:hover {
+      color: #ffcc00;
+    }
+
+    .dashboard {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      padding: 3rem 1rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      width: 300px;
+      height: 200px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card i {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #007bff;
+    }
+
+    .card h2 {
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    footer {
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo"><i class="fas fa-warehouse"></i> Godam Dashboard</div>
+    <div class="menu">
+      <a href="#"><i class="fas fa-home"></i> Home</a>
+      <a href="#"><i class="fas fa-info-circle"></i> About</a>
+      <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+  </nav>
+
+  <div class="dashboard">
+    <div class="card" onclick="viewEntries()">
+      <i class="fas fa-eye"></i>
+      <h2>View Entries</h2>
+    </div>
+    <div class="card" onclick="updateEntries()">
+      <i class="fas fa-edit"></i>
+      <h2>Update Entries</h2>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Godam Vehicle Dashboard. All Rights Reserved.
+  </footer>
+
+  <script>
+    function viewEntries() {
+      // Navigate to views/view.html
+      window.location.href = "view.html";
+    }
+
+    function updateEntries() {
+      // Navigate to views/update.html
+      window.location.href = "update.html";
+    }
+  </script>
+</body>
+</html>

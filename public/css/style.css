@@ -1,0 +1,43 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  max-width: 700px;
+  margin: auto;
+}
+input, select, button {
+  margin: 5px;
+  padding: 5px;
+}
+table, th, td {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  padding: 8px;
+  margin: 10px 0;
+  width: 100%;
+}
+.entry-row {
+  margin: 10px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.container {
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+@media screen and (max-width: 600px) {
+  .entry-row, form {
+    flex-direction: column;
+  }
+  .card {
+    max-width: 90%;
+  }
+  input, select, button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>View Portal | Godam Vehicle Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- html2pdf CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f2f5;
+  overflow-x: hidden;
+  position: relative;
+    }
+    .animated-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-image: linear-gradient(90deg, #e0e0e0 1px, transparent 1px), 
+                    linear-gradient(#e0e0e0 1px, transparent 1px);
+  background-size: 100px 100px;
+}
+
+/* Car icon */
+.car {
+  position: absolute;
+  top: 20%;
+  left: -60px;
+  font-size: 40px;
+  animation: moveCar 10s linear infinite;
+}
+
+/* Optional: Add more cars */
+.car:nth-child(2) {
+  top: 60%;
+  animation-delay: 4s;
+}
+
+.car:nth-child(3) {
+  top: 40%;
+  animation-delay: 2s;
+}
+
+@keyframes moveCar {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(110vw);
+  }
+}
+
+    .header {
+      background-color: #1e3d59;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 2rem;
+      letter-spacing: 1px;
+    }
+
+    .main-container {
+      padding: 40px 5%;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .input-section {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    label {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    input[type="date"] {
+      padding: 10px 15px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin: 10px 15px;
+    }
+
+    button {
+      padding: 10px 25px;
+      font-size: 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin: 5px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    h2 {
+      margin-top: 40px;
+      font-size: 1.5rem;
+      color: #1e3d59;
+      background-color: #e9ecef;
+      padding: 10px;
+      border-left: 5px solid #007bff;
+      animation: fadeIn 0.6s ease;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      animation: fadeIn 0.6s ease;
+    }
+
+    th, td {
+      padding: 14px 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media screen and (max-width: 768px) {
+      .header {
+        font-size: 1.4rem;
+        padding: 15px;
+      }
+
+      input[type="date"], button {
+        width: 100%;
+        margin: 10px 0;
+      }
+
+      table, th, td {
+        font-size: 0.9rem;
+      }
+
+      h2 {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">🚚 Godam Vehicle Tracker - View Data</div>
+  <div class="animated-background">
+  <div class="car">🚚</div>
+  <div class="car">🚛</div>
+  <div class="car">🚐</div>
+</div>
+
+
+  <div class="main-container">
+    <div class="input-section">
+      <label for="viewDate">📅 Select Date:</label><br />
+      <input type="date" id="viewDate" />
+      <button onclick="fetchData()">Fetch</button>
+      
+      <button onclick="downloadPDF()">Download PDF</button>
+
+    </div>
+
+    <div id="results"></div>
+  </div>
+  <!-- jsPDF & autoTable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+
+  <script>
+    async function fetchData() {
+      const date = document.getElementById("viewDate").value;
+      if (!date) {
+        alert("Please select a date.");
+        return;
+      }
+
+      const res = await fetch("/fetch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date }),
+      });
+
+      const data = await res.json();
+      const container = document.getElementById("results");
+      container.innerHTML = "";
+
+      if (data.length === 0) {
+        container.innerHTML =
+          "<p style='text-align:center;color:gray;'>No data found for this date.</p>";
+        return;
+      }
+
+      data.forEach((record) => {
+        const section = document.createElement("div");
+        section.innerHTML = `
+          <h2>📦 ${record.godam}</h2>
+          <table>
+            <tr>
+              <th>Vehicle No</th>
+              <th>Location</th>
+              <th>Status</th>
+            </tr>
+            ${record.entries
+              .map(
+                (entry) => `
+              <tr>
+                <td>${entry.vehicleNo}</td>
+                <td>${entry.location}</td>
+                <td>${entry.status}</td>
+              </tr>
+            `
+              )
+              .join("")}
+          </table>
+        `;
+        container.appendChild(section);
+      });
+    }
+
+    async function downloadPDF() {
+  const date = document.getElementById("viewDate").value;
+  if (!date) {
+    alert("Please select a date first.");
+    return;
+  }
+
+  const res = await fetch("/fetch", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ date }),
+  });
+
+  const data = await res.json();
+  if (data.length === 0) {
+    alert("No data found for this date.");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  let y = 20;
+  doc.setFontSize(14);
+  doc.text(`Godam Vehicle Tracker Report`, 14, y);
+  y += 10;
+  doc.setFontSize(11);
+  doc.text(`Date: ${date}`, 14, y);
+  y += 10;
+
+  data.forEach((record, index) => {
+    doc.setFontSize(12);
+    doc.setTextColor(40);
+    doc.text(`Godam: ${record.godam}`, 14, y);
+    y += 6;
+
+    const tableData = record.entries.map(entry => [
+      entry.vehicleNo,
+      entry.location,
+      entry.status
+    ]);
+
+    doc.autoTable({
+      head: [['Vehicle No', 'Location', 'Status']],
+      body: tableData,
+      startY: y,
+      theme: 'grid',
+      styles: { fontSize: 10 },
+      margin: { left: 14, right: 14 }
+    });
+
+    y = doc.lastAutoTable.finalY + 10;
+  });
+
+  doc.save(`Godam_Report_${date}.pdf`);
+}
+
+  </script>
+</body>
+</html>
