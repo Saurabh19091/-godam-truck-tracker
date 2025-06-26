@@ -50,6 +50,14 @@ Dashboard
 ![Screenshot 2025-06-26 230344](https://github.com/user-attachments/assets/7b65fda7-48e1-4cbb-b4c7-a17d1cfea557)
 
 ![Screenshot 2025-06-26 230344](https://github.com/user-attachments/assets/a19d558a-84bd-40f2-a546-e2df9dac8e68)
+View Entries
+
+![image](https://github.com/user-attachments/assets/41742dfb-1b37-44cd-bc3f-d7f2b8ad3fef)
+![image](https://github.com/user-attachments/assets/41742dfb-1b37-44cd-bc3f-d7f2b8ad3fef)
+ update Enteries
+
+ ![image](https://github.com/user-attachments/assets/5db45314-d354-4c87-b7f3-ff41f9affb26)
+![image](https://github.com/user-attachments/assets/5db45314-d354-4c87-b7f3-ff41f9affb26)
 
 ✅ Status Color Codes
 Status	Description	Row Color
