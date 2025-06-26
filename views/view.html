@@ -90,6 +90,17 @@
       max-width: 1200px;
       margin: auto;
     }
+.status-row-arrived {
+  background-color: #d4edda;
+}
+
+.status-row-not-arrived {
+  background-color: #f8d7da;
+}
+
+.status-row-offline {
+  background-color: #e2e3e5;
+}
 
     .input-section {
       text-align: center;
@@ -229,7 +240,7 @@
 
       if (data.length === 0) {
         container.innerHTML =
-          "<p style='text-align:center;color:gray;'>No data found for this date.</p>";
+          "<p style='text-align:center;color:red;'>No data found for this date.</p>";
         return;
       }
 
@@ -239,26 +250,24 @@
           <h2>📦 ${record.godam}</h2>
           <table>
             <tr>
-              <th>Vehicle No</th>
-              <th>Location</th>
-              <th>Status</th>
-            </tr>
-            ${record.entries
-              .map(
-                (entry) => `
-              <tr>
-                <td>${entry.vehicleNo}</td>
-                <td>${entry.location}</td>
-                <td class="status-${entry.status.toLowerCase().replace(/\s+/g, '-')}">${entry.status}</td>
+  <th>Vehicle No</th>
+  <th>Location</th>
+  <th>Status</th>
+</tr>
+${record.entries.map(function(entry) {
+  var statusClass = 'status-row-' + entry.status.toLowerCase().replace(/\s+/g, '-');
+  return '<tr class="' + statusClass + '">' +
+           '<td>' + entry.vehicleNo + '</td>' +
+           '<td>' + entry.location + '</td>' +
+           '<td>' + entry.status + '</td>' +
+         '</tr>';
+}).join('')}
 
-              </tr>
-            `
-              )
-              .join("")}
           </table>
         `;
         container.appendChild(section);
       });
+      
     }
 
     async function downloadPDF() {
@@ -291,25 +300,42 @@
   doc.text(`Date: ${date}`, 14, y);
   y += 10;
 
-  data.forEach((record, index) => {
+  data.forEach((record) => {
     doc.setFontSize(12);
     doc.setTextColor(40);
     doc.text(`Godam: ${record.godam}`, 14, y);
     y += 6;
 
-    const tableData = record.entries.map(entry => [
-      entry.vehicleNo,
-      entry.location,
-      entry.status
-    ]);
+    const tableBody = record.entries.map((entry) => {
+      let statusColor = [0, 0, 0]; // default black
+
+      if (entry.status.toLowerCase() === 'arrived') {
+        statusColor = [0, 128, 0]; // green
+      } else if (entry.status.toLowerCase() === 'not arrived') {
+        statusColor = [220, 53, 69]; // red
+      } else if (entry.status.toLowerCase() === 'offline') {
+        statusColor = [108, 117, 125]; // gray
+      }
+
+      return [
+        entry.vehicleNo,
+        entry.location,
+        {
+          content: entry.status,
+          styles: {
+            textColor: statusColor
+          }
+        }
+      ];
+    });
 
     doc.autoTable({
       head: [['Vehicle No', 'Location', 'Status']],
-      body: tableData,
+      body: tableBody,
       startY: y,
       theme: 'grid',
       styles: { fontSize: 10 },
-      margin: { left: 14, right: 14 }
+      margin: { left: 14, right: 14 },
     });
 
     y = doc.lastAutoTable.finalY + 10;
