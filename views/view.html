@@ -20,6 +20,21 @@
   overflow-x: hidden;
   position: relative;
     }
+    .status-arrived {
+  color: green;
+  font-weight: bold;
+}
+
+.status-not-arrived {
+  color: red;
+  font-weight: bold;
+}
+
+.status-offline {
+  color: gray;
+  font-weight: bold;
+}
+
     .animated-background {
   position: fixed;
   top: 0;
@@ -234,7 +249,8 @@
               <tr>
                 <td>${entry.vehicleNo}</td>
                 <td>${entry.location}</td>
-                <td>${entry.status}</td>
+                <td class="status-${entry.status.toLowerCase().replace(/\s+/g, '-')}">${entry.status}</td>
+
               </tr>
             `
               )
